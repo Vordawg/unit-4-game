@@ -242,7 +242,6 @@ $(".initCharacters").on("click", function () {
     }
 
     lightsaberTurnOnAudio.play();
-
     clearDisplayMessage();
 });
 
