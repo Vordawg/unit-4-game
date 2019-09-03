@@ -266,8 +266,7 @@ $("#attackButton").on("click", function () {
 
     }
     else if (attacherId >= 0 && defenderId >= 0) {
-        lightsaberClashAudio.
-            lightsaberClashAudio.play();
+        lightsaberClashAudio.play();
 
         starWarsCharacters[defenderId].healthPoints -= starWarsCharacters[attacherId].attackPower;
         starWarsCharacters[attacherId].healthPoints -= starWarsCharacters[defenderId].counterAttackPower;
