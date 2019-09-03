@@ -145,6 +145,8 @@ function initCharacters() {
 
     $("#resetButton").hide();
 
+    clearDisplayMessage();
+
     while (starWarsCharacters.length > 0) {
         starWarsCharacters.pop();
     }
