@@ -1,4 +1,6 @@
 var starWarsCharacters = [];
+var attacherId = -1;
+var defenderId = -1;
 
 function getRandomInt(max) {
     var randomNumber = Math.floor(Math.random() * Math.floor(max));
@@ -64,6 +66,8 @@ function setupCharacter(characterName) {
         attackPowerBase: 0,
         attackPower: 0,
         counterAttackPower: 0,
+        value: 0,
+        attacker: false,
 
         setName: function (input) {
             this.name = input;
@@ -75,10 +79,19 @@ function setupCharacter(characterName) {
 
         setAttackPowerBase: function (input) {
             this.attackPowerBase = input;
+            this.setAttackPower();
+        },
+
+        setAttackPower: function () {
+            this.attackPower += this.attackPowerBase;
         },
 
         setCounterAttackPower: function (input) {
             this.counterAttackPower = input;
+        },
+
+        setValue: function () {
+            this.value = starWarsCharacters.length - 1;
         },
 
         resetCharacterOnScreen: function () {
@@ -108,13 +121,32 @@ function setupCharacter(characterName) {
     warriors.setAttackPowerBase(getAttackPower());
     warriors.setCounterAttackPower(getCounterAttackPower());
     starWarsCharacters.push(warriors);
-    warriors.resetCharacterOnScreen()
+    warriors.setValue();
+    warriors.resetCharacterOnScreen();
 }
 
 function initCharacters() {
+
+    $("#characterChoice0").html("");
+    $("#characterChoice1").html("");
+    $("#characterChoice2").html("");
+    $("#characterChoice3").html("");
+
+    $("#availableEnemyCharacter0").html("");
+    $("#availableEnemyCharacter1").html("");
+    $("#availableEnemyCharacter2").html("");
+    $("#availableEnemyCharacter3").html("");
+
+    $("#attackingCharacter").html("");
+    $("#defendingCharacter").html("");
+
     while (starWarsCharacters.length > 0) {
         starWarsCharacters.pop();
     }
+
+    attacherId = -1;
+    defenderId = -1;
+
     setupCharacter("Obi-Wan Kenobi");
     console.log(starWarsCharacters[0]);
     setupCharacter("Luke Skywalker");
@@ -125,6 +157,63 @@ function initCharacters() {
     console.log(starWarsCharacters[3]);
 }
 
+function setAttackingCharacterOnScreen(input) {
+    var imageName = starWarsCharacters[input].name.replace(" ", "");
+    imageName = imageName.replace("-", "");
 
+    var characterHtml = "";
+
+    characterHtml = '<div class="card border-success border-30" style="width:200px; height:180px">';
+    characterHtml += '<div class="card-body">';
+    characterHtml += '<p class="card-title text-center">' + starWarsCharacters[input].name + '</p>';
+    characterHtml += '<img src="assets/images/' + imageName + '.jpg" style="width:150px; height:80px" class="card-img-top"';
+    characterHtml += 'id="' + starWarsCharacters[input] + '">';
+    characterHtml += '<p class="text-center">' + starWarsCharacters[input].healthPoints + '</p>'
+    characterHtml += '</div>';
+    characterHtml += '</div>';
+
+    $("#attackingCharacter").html(characterHtml);
+}
+
+function setDefendingCharacterOnScreen(input) {
+    var imageName = starWarsCharacters[input].name.replace(" ", "");
+    imageName = imageName.replace("-", "");
+
+    var characterHtml = "";
+
+    characterHtml = '<div class="card border-dark bg-danger border-30" style="width:200px; height:180px">';
+    characterHtml += '<div class="card-body">';
+    characterHtml += '<p class="card-title text-center">' + starWarsCharacters[input].name + '</p>';
+    characterHtml += '<img src="assets/images/' + imageName + '.jpg" style="width:150px; height:80px" class="card-img-top"';
+    characterHtml += 'id="' + starWarsCharacters[input] + '">';
+    characterHtml += '<p class="text-center">' + starWarsCharacters[input].healthPoints + '</p>'
+    characterHtml += '</div>';
+    characterHtml += '</div>';
+
+    var characterNameID = "#availableEnemyCharacter" + input;
+    $(characterNameID).html(characterHtml);
+}
+
+$("#resetButton").on("click", function () {
+    initCharacters();
+});
+
+$(".initCharacters").on("click", function () {
+    console.log(this.id);
+    $("#characterChoice0").html("");
+    $("#characterChoice1").html("");
+    $("#characterChoice2").html("");
+    $("#characterChoice3").html("");
+
+    attacherId = this.id[this.id.length - 1];
+    setAttackingCharacterOnScreen(attacherId);
+
+    for (var loop = 0; loop < starWarsCharacters.length; loop++) {
+        if (loop != attacherId) {
+            setDefendingCharacterOnScreen(loop);
+        }
+    }
+
+});
 
 initCharacters();
