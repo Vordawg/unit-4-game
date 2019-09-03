@@ -2,6 +2,9 @@ var starWarsCharacters = [];
 var attacherId = -1;
 var defenderId = -1;
 
+var lightsaberTurnOnAudio = new Audio("assets/audio/LightsaberTurnOn.mp3");
+var lightsaberClashAudio = new Audio("assets/audio/LightsaberClash.mp3");
+
 function getRandomInt(max) {
     var randomNumber = Math.floor(Math.random() * Math.floor(max));
     return randomNumber;
@@ -238,6 +241,8 @@ $(".initCharacters").on("click", function () {
         }
     }
 
+    lightsaberTurnOnAudio.play();
+
     clearDisplayMessage();
 });
 
@@ -249,6 +254,7 @@ $(".enemyCharacters").on("click", function () {
         var removeEnemy = "#" + this.id;
         $(removeEnemy).html("");
         setDefendingCharacterOnScreen(defenderId);
+        lightsaberTurnOnAudio.play();
         clearDisplayMessage();
     }
 });
@@ -260,6 +266,9 @@ $("#attackButton").on("click", function () {
 
     }
     else if (attacherId >= 0 && defenderId >= 0) {
+        lightsaberClashAudio.
+            lightsaberClashAudio.play();
+
         starWarsCharacters[defenderId].healthPoints -= starWarsCharacters[attacherId].attackPower;
         starWarsCharacters[attacherId].healthPoints -= starWarsCharacters[defenderId].counterAttackPower;
 
