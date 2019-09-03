@@ -13,7 +13,7 @@ function getHealthPoints() {
     if (starWarsCharacters.length > 0) {
         var healthPointsArray = [];
         for (var loop = 0; loop < starWarsCharacters.length; loop++) {
-            healthPointsArray.push(starWarsCharacters[loop].getHealthPoints)
+            healthPointsArray.push(starWarsCharacters[loop].healthPoints)
         }
 
         while (healthPointsArray.indexOf(myRandomNumber) >= 0) {
@@ -30,7 +30,7 @@ function getAttackPower() {
     if (starWarsCharacters.length > 0) {
         var attackPowerArray = [];
         for (var loop = 0; loop < starWarsCharacters.length; loop++) {
-            attackPowerArray.push(starWarsCharacters[loop].getAttackPower)
+            attackPowerArray.push(starWarsCharacters[loop].attackPower)
         }
 
         while (attackPowerArray.indexOf(myRandomNumber) >= 0) {
@@ -102,7 +102,7 @@ function setupCharacter(characterName) {
 
             var characterHtml = "";
 
-            characterHtml = '<div class="card border-success border-30" style="width:200px; height:180px">';
+            characterHtml = '<div class="card border-success" style="width:200px; height:180px">';
             characterHtml += '<div class="card-body">';
             characterHtml += '<p class="card-title text-center">' + this.name + '</p>';
             characterHtml += '<img src="assets/images/' + imageName + '.jpg" style="width:150px; height:80px" class="card-img-top"';
@@ -140,6 +140,8 @@ function initCharacters() {
     $("#attackingCharacter").html("");
     $("#defendingCharacter").html("");
 
+    $("#resetButton").hide();
+
     while (starWarsCharacters.length > 0) {
         starWarsCharacters.pop();
     }
@@ -157,60 +159,63 @@ function initCharacters() {
     console.log(starWarsCharacters[3]);
 }
 
-function setAttackingCharacterOnScreen(input) {
-    var imageName = starWarsCharacters[input].name.replace(" ", "");
+function getCharacterCardHTML(characterNumber, borderstyle) {
+    var imageName = starWarsCharacters[characterNumber].name.replace(" ", "");
     imageName = imageName.replace("-", "");
 
     var characterHtml = "";
 
-    characterHtml = '<div class="card border-success border-30" style="width:200px; height:180px">';
+    characterHtml = '<div class="card ' + borderstyle + ' border-30" style="width:200px; height:180px">';
     characterHtml += '<div class="card-body">';
-    characterHtml += '<p class="card-title text-center">' + starWarsCharacters[input].name + '</p>';
+    characterHtml += '<p class="card-title text-center">' + starWarsCharacters[characterNumber].name + '</p>';
     characterHtml += '<img src="assets/images/' + imageName + '.jpg" style="width:150px; height:80px" class="card-img-top"';
-    characterHtml += 'id="' + starWarsCharacters[input] + '">';
-    characterHtml += '<p class="text-center">' + starWarsCharacters[input].healthPoints + '</p>'
+    characterHtml += 'id="' + starWarsCharacters[characterNumber] + '">';
+    characterHtml += '<p class="text-center">' + starWarsCharacters[characterNumber].healthPoints + '</p>'
     characterHtml += '</div>';
     characterHtml += '</div>';
+
+    return characterHtml;
+}
+
+function setAttackingCharacterOnScreen(input) {
+    var borderStyle = "border-success";
+    var characterHtml = getCharacterCardHTML(input, borderStyle);
 
     $("#attackingCharacter").html(characterHtml);
 }
 
 function setAvailableDefendingCharacterOnScreen(input) {
-    var imageName = starWarsCharacters[input].name.replace(" ", "");
-    imageName = imageName.replace("-", "");
-
-    var characterHtml = "";
-
-    characterHtml = '<div class="card border-dark bg-danger border-30" style="width:200px; height:180px">';
-    characterHtml += '<div class="card-body">';
-    characterHtml += '<p class="card-title text-center">' + starWarsCharacters[input].name + '</p>';
-    characterHtml += '<img src="assets/images/' + imageName + '.jpg" style="width:150px; height:80px" class="card-img-top"';
-    characterHtml += 'id="' + starWarsCharacters[input] + '">';
-    characterHtml += '<p class="text-center">' + starWarsCharacters[input].healthPoints + '</p>'
-    characterHtml += '</div>';
-    characterHtml += '</div>';
+    var borderStyle = "border-dark bg-danger";
+    var characterHtml = getCharacterCardHTML(input, borderStyle);
 
     var characterNameID = "#availableEnemyCharacter" + input;
     $(characterNameID).html(characterHtml);
 }
 
 function setDefendingCharacterOnScreen(input) {
-    var imageName = starWarsCharacters[input].name.replace(" ", "");
-    imageName = imageName.replace("-", "");
-
-    var characterHtml = "";
-
-    characterHtml = '<div class="card border-sucess bg-dark text-white border-30" style="width:200px; height:180px">';
-    characterHtml += '<div class="card-body">';
-    characterHtml += '<p class="card-title text-center">' + starWarsCharacters[input].name + '</p>';
-    characterHtml += '<img src="assets/images/' + imageName + '.jpg" style="width:150px; height:80px" class="card-img-top"';
-    characterHtml += 'id="' + starWarsCharacters[input] + '">';
-    characterHtml += '<p class="text-center">' + starWarsCharacters[input].healthPoints + '</p>'
-    characterHtml += '</div>';
-    characterHtml += '</div>';
+    var borderStyle = "border-sucess bg-dark text-white";
+    var characterHtml = getCharacterCardHTML(input, borderStyle);
 
     var characterNameID = "#defendingCharacter";
     $(characterNameID).html(characterHtml);
+}
+
+function areAllEnemiesDefeated() {
+    var allDefeated = true;
+    for (var loop = 0; loop < starWarsCharacters.length; loop++) {
+        if (loop != attacherId && starWarsCharacters[loop].healthPoints > 0) {
+            allDefeated = false;
+        }
+    }
+    return allDefeated;
+}
+
+function setDisplayMessage(message) {
+    $("#userMessage").html("<h5>" + message + "</h5>");
+}
+
+function clearDisplayMessage() {
+    $("#userMessage").html("");
 }
 
 $("#resetButton").on("click", function () {
@@ -233,6 +238,7 @@ $(".initCharacters").on("click", function () {
         }
     }
 
+    clearDisplayMessage();
 });
 
 $(".enemyCharacters").on("click", function () {
@@ -243,35 +249,60 @@ $(".enemyCharacters").on("click", function () {
         var removeEnemy = "#" + this.id;
         $(removeEnemy).html("");
         setDefendingCharacterOnScreen(defenderId);
+        clearDisplayMessage();
     }
 });
 
 $("#attackButton").on("click", function () {
-    if (attacherId >= 0 && defenderId >= 0) {
+    var theUserMessage = "";
+
+    if (starWarsCharacters[attacherId].healthPoints <= 0) {
+
+    }
+    else if (attacherId >= 0 && defenderId >= 0) {
         starWarsCharacters[defenderId].healthPoints -= starWarsCharacters[attacherId].attackPower;
         starWarsCharacters[attacherId].healthPoints -= starWarsCharacters[defenderId].counterAttackPower;
 
-        var userMessage = "";
-        var defenderMessage = "";
-        var winLossMessage = "";
+        setAttackingCharacterOnScreen(attacherId);
+        setDefendingCharacterOnScreen(defenderId);
+
+        var allDefeated = areAllEnemiesDefeated();
+        var theDefenderMessage = "";
 
         if (starWarsCharacters[defenderId].healthPoints > 0 && starWarsCharacters[attacherId].healthPoints > 0) {
-            userMessage = "You attacked " + starWarsCharacters[defenderId].characterName + " for " + starWarsCharacters[attacherId].attackPower;
-            defenderMessage = starWarsCharacters[defenderId].name + " attacked you back for " + starWarsCharacters[defenderId].counterAttackPower;
-            setAttackingCharacterOnScreen(attacherId);
-            setDefendingCharacterOnScreen(defenderId);
+            theUserMessage = "You attacked " + starWarsCharacters[defenderId].name + " for " + starWarsCharacters[attacherId].attackPower + " damage";
+            theDefenderMessage = starWarsCharacters[defenderId].name + " attacked you back for " + starWarsCharacters[defenderId].counterAttackPower + " damage";
+
+            setDisplayMessage(theUserMessage + "<br>" + theDefenderMessage);
+
+            starWarsCharacters[attacherId].setAttackPower();
         }
-        else if (starWarsCharacters[defenderId].healthPoints <= 0) {
-            winLossMessage = "You have defeated " + starWarsCharacters[defenderId].name + ", you can chose another enemy.";
+        else if (starWarsCharacters[attacherId].healthPoints <= 0) {
+            theUserMessage = "You have been defeated...GAME OVER!!!";
+            setDisplayMessage(theUserMessage);
+
+            $("#resetButton").show();
+        }
+        else if (starWarsCharacters[defenderId].healthPoints <= 0 && !allDefeated) {
+            theUserMessage = "You have defeated " + starWarsCharacters[defenderId].name + ", you can chose another enemy.";
             defenderId = -1;
+            $("#defendingCharacter").html("");
+
+            setDisplayMessage(theUserMessage);
+            setAttackingCharacterOnScreen(attacherId);
+            starWarsCharacters[attacherId].setAttackPower();
         }
-        else if (starWarsCharacters[defenderId].healthPoints <= 0) {
-            winLossMessage = "You Won!!! GAME OVER!!!";
+        else if (starWarsCharacters[defenderId].healthPoints <= 0 && allDefeated) {
+            theUserMessage = "You Won!!! GAME OVER!!!";
+            setDisplayMessage(theUserMessage);
+            $("#defendingCharacter").html("");
+            $("#resetButton").show();
         }
 
-
-
-        starWarsCharacters[attacherId].setAttackPower();
+    }
+    else {
+        theUserMessage = "No enemy here.";
+        setDisplayMessage(theUserMessage);
     }
 });
 

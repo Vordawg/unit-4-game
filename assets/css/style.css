@@ -1,5 +1,6 @@
 body {
-    /* The image used */
     background-image: url("../images/background.jpg");
-    background-size: auto auto;   
+    background-size: auto auto;
+    
+    padding-left: 10px;
   }
